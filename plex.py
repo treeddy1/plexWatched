@@ -169,9 +169,9 @@ class Movie(object):
 		self.filePath = ""
 		self.watched = False
 
-host = "192.168.1.173:32400"
-username = "treeddy1"
-password = "iluvibm7"
+host = ""
+username = ""
+password = ""
 myplex = Plex(host, username, password)
 myplex.get_sections()
 myplex.refesh_library()
