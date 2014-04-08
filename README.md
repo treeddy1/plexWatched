@@ -25,5 +25,5 @@ I have been a longtime SickBeard and XBMC user.  Then one day XBMC started to su
 + Write command lines to file, instead of outputing them to the console
 + Potentially support multi-user (would like to see plex implement that in the API)
 + Build a web interface for it
-
++ Add config file support, so you don't have to specify the options evertime you run
 
