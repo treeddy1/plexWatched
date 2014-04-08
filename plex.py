@@ -186,8 +186,6 @@ myplex.get_sections()
 myplex.refesh_library()
 
 if options.tv:
-	print "TV: "
-
 	shows = myplex.get_shows()
 	for show in shows:
 		for episode in show.episodes:
@@ -195,7 +193,6 @@ if options.tv:
 				print "rm " + "\"" + episode.filePath + "\""
 
 if options.movies:
-	print "Movies: "
 	movies = myplex.get_movies()
 	for movie in movies:
 		if movie.watched:
