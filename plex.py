@@ -1,8 +1,9 @@
 import urllib
 import urllib2
 import base64
+import sys
 from xml.dom import minidom
-
+from optparse import OptionParser
 
 
 class Plex(object):
@@ -37,6 +38,7 @@ class Plex(object):
 		except (urllib2.URLError, IOError), e:
 			print "Warning: Couldn't contact Plex at: " + url 
 			print e
+			
 
 	def _send_to_plex(self, command):
 		url = "http://%s%s" % (self.host, command)
@@ -59,16 +61,17 @@ class Plex(object):
 
 		except (urllib2.URLError, IOError), e:
 			print "Warning: Couldn't contact Plex at: " + url 
+			sys.exit()
 
 
 	def get_sections(self):
+
 		sections = self._send_to_plex('/library/sections/').getElementsByTagName('Directory')
 		for section in sections:
 			if section.getAttribute('type') == "show":
 				self.showKey = section.getAttribute('key')
 			elif section.getAttribute('type') == "movie":
 				self.movieKey = section.getAttribute('key')
-
 
 
 	def get_shows(self):
@@ -169,25 +172,34 @@ class Movie(object):
 		self.filePath = ""
 		self.watched = False
 
-host = ""
-username = ""
-password = ""
-myplex = Plex(host, username, password)
+parser = OptionParser()
+parser.add_option( "-m", "--movies", help="Output Movies that have been watched", action="store_true", dest="movies", default=False)
+parser.add_option( "-t", "--tv", help="Output TV Shows that have been watched", action="store_true", dest="tv", default=False)
+parser.add_option( "-s", "--server", help="PMS Host Name (hostname:portnumber)", action="store", dest="server", default="127.0.0.1:32400")
+parser.add_option( "-u", "--username", help="PlexPass Username (only if local auth required)", action="store", dest="username", default="")
+parser.add_option( "-p", "--password", help="PlexPass Password (only if local auth requried)", action="store", dest="password", default="")
+(options, args) = parser.parse_args()
+
+
+myplex = Plex(options.server, options.username, options.password)
 myplex.get_sections()
 myplex.refesh_library()
-shows = myplex.get_shows()
 
-for show in shows:
-	for episode in show.episodes:
-		if episode.watched:
-			print "rm " + "\"" + episode.filePath + "\""
+if options.tv:
+	print "TV: "
 
+	shows = myplex.get_shows()
+	for show in shows:
+		for episode in show.episodes:
+			if episode.watched:
+				print "rm " + "\"" + episode.filePath + "\""
 
-movies = myplex.get_movies()
-
-for movie in movies:
-	if movie.watched:
-		print "rm " +"\"" + movie.filePath + "\""
+if options.movies:
+	print "Movies: "
+	movies = myplex.get_movies()
+	for movie in movies:
+		if movie.watched:
+			print "rm " +"\"" + movie.filePath + "\""
 
 
 
